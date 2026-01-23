@@ -31,7 +31,7 @@ function WhatsAppDemo() {
     return (
         <div className="whatsapp-demo container">
             <h1>WhatsApp AI Demo</h1>
-            <p className="text-muted">Test WhatsApp messaging with RAG-powered responses</p>
+            <p className="text-muted">Test WhatsApp messaging with AI-powered responses</p>
 
             <div className="demo-grid">
                 <div className="card">
@@ -64,7 +64,7 @@ function WhatsAppDemo() {
                 <div className="card">
                     <h3>Features</h3>
                     <ul className="feature-list">
-                        <li>Auto-reply with RAG context</li>
+                        <li>Auto-reply with AI context</li>
                         <li>Intent classification</li>
                         <li>Session management</li>
                         <li>Payment links</li>

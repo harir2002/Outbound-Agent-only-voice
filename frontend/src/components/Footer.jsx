@@ -19,7 +19,7 @@ function Footer() {
                         <ul className="footer-links">
                             <li><a href="#whatsapp">WhatsApp AI</a></li>
                             <li><a href="#voice">Voice AI</a></li>
-                            <li><a href="#rag">RAG Engine</a></li>
+
                             <li><a href="#compliance">Compliance</a></li>
                         </ul>
                     </div>
