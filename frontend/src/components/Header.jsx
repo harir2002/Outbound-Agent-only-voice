@@ -11,10 +11,14 @@ function Header() {
             <div className="container">
                 <div className="header-content">
                     <Link to="/" className="logo">
-                        <div className="logo-icon">🏦</div>
+                        <img
+                            src="/sba-logo.png"
+                            alt="SBA Info Solutions"
+                            style={{ height: '45px', objectFit: 'contain' }}
+                        />
                         <div className="logo-text">
-                            <span className="logo-title">BFSI AI Platform</span>
-                            <span className="logo-subtitle">WhatsApp & Voice AI</span>
+                            <span className="logo-title">SBA Info Solutions</span>
+                            <span className="logo-subtitle">BFSI AI Platform</span>
                         </div>
                     </Link>
 
@@ -44,10 +48,6 @@ function Header() {
                             Voice AI
                         </Link>
                     </nav>
-
-                    <div className="header-actions">
-                        <button className="btn btn-outline">Documentation</button>
-                    </div>
                 </div>
             </div>
         </header>
