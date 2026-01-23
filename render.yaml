@@ -9,6 +9,7 @@ services:
   - type: web
     name: bfsi-backend
     env: docker
+    rootDir: backend
     plan: free
     region: singapore
     buildCommand: docker build -t bfsi-backend .
