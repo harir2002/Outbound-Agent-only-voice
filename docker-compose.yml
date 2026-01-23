@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  # ==================== BACKEND ====================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bfsi-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/bfsi_ai
+      - CELERY_BROKER_URL=redis://redis:6379/1
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      - ./data/chromadb:/app/data/chromadb
+      - ./data/uploads:/app/data/uploads
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - bfsi-network
+    restart: unless-stopped
+
+  # ==================== CELERY WORKER ====================
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bfsi-celery-worker
+    command: celery -A app.celery_app worker --loglevel=info
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+      - ./data/chromadb:/app/data/chromadb
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - bfsi-network
+    restart: unless-stopped
+
+  # ==================== CELERY BEAT ====================
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bfsi-celery-beat
+    command: celery -A app.celery_app beat --loglevel=info
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+      - backend
+    networks:
+      - bfsi-network
+    restart: unless-stopped
+
+  # ==================== FRONTEND ====================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bfsi-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - bfsi-network
+    restart: unless-stopped
+
+  # ==================== REDIS ====================
+  redis:
+    image: redis:7-alpine
+    container_name: bfsi-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - bfsi-network
+    restart: unless-stopped
+
+  # ==================== POSTGRESQL ====================
+  postgres:
+    image: postgres:15-alpine
+    container_name: bfsi-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=bfsi_ai
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - bfsi-network
+    restart: unless-stopped
+
+# ==================== NETWORKS ====================
+networks:
+  bfsi-network:
+    driver: bridge
+
+# ==================== VOLUMES ====================
+volumes:
+  redis-data:
+  postgres-data:
