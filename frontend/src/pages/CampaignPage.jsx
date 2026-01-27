@@ -192,7 +192,7 @@ Thank you!
             <div className="page-header">
                 <h1>📞 Outbound Campaign</h1>
                 <p className="text-muted">
-                    Make voice call + Send WhatsApp follow-up automatically
+                    Make voice call + Send SMS follow-up automatically
                 </p>
             </div>
 
@@ -250,31 +250,7 @@ Thank you!
                         </select>
                     </div>
 
-                    <div className="form-group">
-                        <label className="form-label">Follow-up Channel</label>
-                        <div className="channel-selector">
-                            <label className="radio-label">
-                                <input
-                                    type="radio"
-                                    name="messageType"
-                                    value="sms"
-                                    checked={formData.messageType === 'sms'}
-                                    onChange={handleChange}
-                                />
-                                Direct SMS (Recommended)
-                            </label>
-                            <label className="radio-label" style={{ marginLeft: '20px' }}>
-                                <input
-                                    type="radio"
-                                    name="messageType"
-                                    value="whatsapp"
-                                    checked={formData.messageType === 'whatsapp'}
-                                    onChange={handleChange}
-                                />
-                                WhatsApp (Requires Sandbox)
-                            </label>
-                        </div>
-                    </div>
+
 
                     <div className="form-group">
                         <label className="form-label">Customer Name</label>
@@ -382,7 +358,7 @@ Thank you!
                         <div className="flow-step">
                             <div className="step-number">2</div>
                             <div className="step-content">
-                                <h4>💬 WhatsApp Follow-up</h4>
+                                <h4>💬 SMS Follow-up</h4>
                                 <p>Automatic message sent after call</p>
                                 <ul>
                                     <li>Summary of call</li>
@@ -403,7 +379,7 @@ Thank you!
                                 <ul>
                                     <li>Call status</li>
                                     <li>Customer response</li>
-                                    <li>WhatsApp delivery</li>
+                                    <li>SMS delivery</li>
                                     <li>Analytics</li>
                                 </ul>
                             </div>
@@ -430,22 +406,22 @@ Thank you!
                     <div className="example-card">
                         <h5>EMI Reminder</h5>
                         <p>Voice: "Your EMI of ₹25,000 is due on 5th Feb"</p>
-                        <p>WhatsApp: Payment link + details</p>
+                        <p>SMS: Payment link + details</p>
                     </div>
                     <div className="example-card">
                         <h5>Policy Renewal</h5>
                         <p>Voice: "Your policy expires on 15th March"</p>
-                        <p>WhatsApp: Renewal link + coverage details</p>
+                        <p>SMS: Renewal link + coverage details</p>
                     </div>
                     <div className="example-card">
                         <h5>Loan Offer</h5>
                         <p>Voice: "Pre-approved loan up to ₹5 lakhs"</p>
-                        <p>WhatsApp: Application link + terms</p>
+                        <p>SMS: Application link + terms</p>
                     </div>
                     <div className="example-card">
                         <h5>Claim Update</h5>
                         <p>Voice: "Your claim is being processed"</p>
-                        <p>WhatsApp: Status + documents needed</p>
+                        <p>SMS: Status + documents needed</p>
                     </div>
                 </div>
             </div>

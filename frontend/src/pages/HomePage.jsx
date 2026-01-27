@@ -18,7 +18,7 @@ function HomePage() {
                             Enterprise AI for <span className="text-primary">BFSI</span>
                         </h1>
                         <p className="hero-subtitle">
-                            Automate customer engagement with Voice AI + WhatsApp
+                            Automate customer engagement with Voice AI + SMS
                             <br />
                             Powered by Groq, Sarvam AI, and Twilio
                         </p>
@@ -26,9 +26,7 @@ function HomePage() {
                             <Link to="/campaign" className="btn btn-primary">
                                 Start Campaign
                             </Link>
-                            <Link to="/whatsapp" className="btn btn-secondary">
-                                WhatsApp Demo
-                            </Link>
+
                         </div>
 
 
@@ -42,7 +40,7 @@ function HomePage() {
                     <div className="cta-card card">
                         <h2>Ready to Get Started?</h2>
                         <p className="text-muted mb-lg">
-                            Start your first campaign: Voice call + WhatsApp follow-up
+                            Start your first campaign: Voice call + SMS follow-up
                         </p>
                         <div className="cta-actions">
                             <Link to="/campaign" className="btn btn-primary">

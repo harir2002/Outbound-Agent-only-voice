@@ -35,12 +35,7 @@ function Header() {
                         >
                             Campaign
                         </Link>
-                        <Link
-                            to="/whatsapp"
-                            className={`nav-link ${isActive('/whatsapp') ? 'active' : ''}`}
-                        >
-                            WhatsApp
-                        </Link>
+
                         <Link
                             to="/voice"
                             className={`nav-link ${isActive('/voice') ? 'active' : ''}`}

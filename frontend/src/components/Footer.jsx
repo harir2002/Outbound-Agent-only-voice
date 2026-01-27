@@ -17,7 +17,7 @@ function Footer() {
                     <div className="footer-section">
                         <h5>Features</h5>
                         <ul className="footer-links">
-                            <li><a href="#whatsapp">WhatsApp AI</a></li>
+
                             <li><a href="#voice">Voice AI</a></li>
 
                             <li><a href="#compliance">Compliance</a></li>
