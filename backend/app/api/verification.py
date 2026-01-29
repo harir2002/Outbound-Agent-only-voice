@@ -80,7 +80,9 @@ async def send_verification_code(request: SendVerificationRequest):
             body=message_body
         )
         
+        
         logger.info(f"✅ Verification code sent to {phone_number}")
+        logger.info(f"🔑 VERIFICATION CODE: {code}")  # Print code to console for easy access
         logger.info(f"   Twilio Message SID: {message.sid}")
         
         return {

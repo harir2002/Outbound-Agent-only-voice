@@ -11,9 +11,8 @@ import time
 
 from app.core.config import settings
 from app.core.logging import setup_logging, logger
-from app.api import whatsapp, sms, voice, analytics, verification
+from app.api import whatsapp, sms, voice, analytics, verification, email
 
-# Setup logging
 # Setup logging
 setup_logging()
 
@@ -91,6 +90,7 @@ app.include_router(sms.router, prefix="/api/sms", tags=["SMS"])
 app.include_router(voice.router, prefix="/api/voice", tags=["Voice AI"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(verification.router, prefix="/api/verification", tags=["Verification"])
+app.include_router(email.router, prefix="/api/email", tags=["Email"])
 
 
 # Health check

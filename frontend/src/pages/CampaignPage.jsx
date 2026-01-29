@@ -1,6 +1,5 @@
 import { useState } from 'react'
-import { voiceAPI, whatsappAPI, smsAPI } from '../api'
-import PhoneVerification from '../components/PhoneVerification'
+import { voiceAPI, whatsappAPI, smsAPI, emailAPI } from '../api'
 import './CampaignPage.css'
 
 function CampaignPage() {
@@ -10,22 +9,16 @@ function CampaignPage() {
         campaignType: 'emi_reminder',
         sector: 'banking',
         language: 'en',
+        email: '',
         amount: '',
         dueDate: '',
-        messageType: 'sms', // Default to SMS as it's easier to test
-        ngrokUrl: import.meta.env.VITE_API_URL || ''
+        messageType: 'email', // Default to email as it's more reliable for demo
+        ngrokUrl: 'https://1db819452b10.ngrok-free.app'
     })
 
     const [loading, setLoading] = useState(false)
     const [status, setStatus] = useState('')
     const [callId, setCallId] = useState('')
-    const [showVerification, setShowVerification] = useState(false)
-
-    const handleVerified = (verifiedNumber) => {
-        setFormData({ ...formData, phoneNumber: verifiedNumber })
-        setShowVerification(false)
-        setStatus(`✅ Number ${verifiedNumber} verified! You can now make calls.`)
-    }
 
     const handleChange = (e) => {
         setFormData({
@@ -40,7 +33,12 @@ function CampaignPage() {
             return
         }
 
-        const publicUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+        if (formData.messageType === 'email' && !formData.email) {
+            alert('Please enter email address for follow-up')
+            return
+        }
+
+        const publicUrl = formData.ngrokUrl || import.meta.env.VITE_API_URL || 'http://localhost:8001'
 
         try {
             setLoading(true)
@@ -75,6 +73,15 @@ function CampaignPage() {
                     message: whatsappMessage
                 })
                 setStatus('✅ Campaign completed! Voice call made + WhatsApp sent')
+            } else if (formData.messageType === 'email') {
+                setStatus('📧 Sending Email follow-up...')
+                const emailMessage = generateFollowUpMessage(formData)
+                await emailAPI.sendEmail({
+                    to_email: formData.email,
+                    subject: 'Action Required: Your Campaign Update',
+                    body: emailMessage
+                })
+                setStatus('✅ Campaign completed! Voice call made + Email sent')
             } else {
                 setStatus('💬 Sending SMS follow-up...')
                 const smsMessage = generateFollowUpMessage(formData)
@@ -129,8 +136,8 @@ This is a reminder about your upcoming EMI payment.
 
 We tried calling you. Please make the payment to avoid late fees.
 
-Reply PAY to get payment link.
-Reply HELP for assistance.
+If you want to pay click the link: https://www.sbainfo.in
+
 
 Thank you!
       `.trim(),
@@ -181,6 +188,66 @@ Reply STATUS for latest update.
 Reply HELP for assistance.
 
 Thank you!
+      `.trim(),
+
+            debt_recovery: `
+Hi ${data.customerName || 'Customer'},
+
+Subject: 40% Waiver on Your Outstanding Dues – Valid for TODAY Only
+
+This is a priority message from CreditMantri. We have partnered with your bank to offer a specific waiver to help you clear your dues.
+
+🔥 Resolution Offer:
+• 40% Waiver on outstanding dues
+• Valid only for Today
+• Improve your Credit Score immediately
+
+We tried calling you earlier. Don't miss this one-time settlement opportunity.
+
+👉 Click here to clear your debt: https://credit.mantri/settle/123
+
+Thank you,
+Team CreditMantri
+      `.trim(),
+
+            lead_generation: `
+Hi ${data.customerName || 'Customer'},
+
+Subject: Congratulations! You are Pre-Approved for ₹5 Lakhs Personal Loan
+
+Great news! Based on your CreditMantri profile, you are eligible for a special pre-approved offer.
+
+✨ Offer Details:
+• Loan Amount: Up to ₹5,00,000
+• Interest Rate: Special preference rates
+• Paperwork: None (100% Digital)
+
+We tried calling you regarding this exclusive offer. Claim your funds instantly!
+
+👉 Click here to get money in your account: https://credit.mantri/loan/apply
+
+Thank you,
+Team CreditMantri
+      `.trim(),
+
+            credit_repair: `
+Hi ${data.customerName || 'Customer'},
+
+Subject: Alert: Recent Drop in Your Credit Score
+
+We noticed a recent drop in your credit score. This could impact your ability to get loans or credit cards in the future.
+
+Your Credit Health Check:
+📉 Score Status: Dropped
+⚠️ Potential Impact: Lower loan eligibility
+🛠️ Solution: CreditFit Expert Assistance
+
+CreditMantri's CreditFit experts can help you fix errors and remove negative entries to boost your score.
+
+👉 Check your personalized Health Report: https://credit.mantri/health/report
+
+Thank you,
+Team CreditMantri
       `.trim()
         }
 
@@ -192,7 +259,7 @@ Thank you!
             <div className="page-header">
                 <h1>📞 Outbound Campaign</h1>
                 <p className="text-muted">
-                    Make voice call + Send SMS follow-up automatically
+                    Make voice call + Send Email follow-up automatically
                 </p>
             </div>
 
@@ -200,6 +267,21 @@ Thank you!
                 {/* Campaign Form */}
                 <div className="card campaign-form">
 
+
+                    <div className="form-group">
+                        <label className="form-label">Ngrok / Public URL</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            name="ngrokUrl"
+                            placeholder="https://your-ngrok-url.app"
+                            value={formData.ngrokUrl}
+                            onChange={handleChange}
+                        />
+                        <small className="text-muted" style={{ display: 'block', marginTop: '0.25rem' }}>
+                            Required for Twilio callbacks (must start with https://)
+                        </small>
+                    </div>
 
                     <div className="form-group">
 
@@ -215,6 +297,9 @@ Thank you!
                             <option value="policy_renewal">Policy Renewal</option>
                             <option value="loan_offer">Loan Offer</option>
                             <option value="claim_update">Claim Status Update</option>
+                            <option value="debt_recovery">Debt Recovery (Resolution Offer)</option>
+                            <option value="lead_generation">Lead Generation (Pre-Approved Loan)</option>
+                            <option value="credit_repair">Credit Repair (Health Check)</option>
                         </select>
                     </div>
 
@@ -244,9 +329,6 @@ Thank you!
                             <option value="en">English</option>
                             <option value="hi">Hindi</option>
                             <option value="ta">Tamil</option>
-                            <option value="te">Telugu</option>
-                            <option value="mr">Marathi</option>
-                            <option value="bn">Bengali</option>
                         </select>
                     </div>
 
@@ -264,30 +346,30 @@ Thank you!
                         />
                     </div>
 
+
+
+                    <div className="form-group">
+                        <label className="form-label">Email Address</label>
+                        <input
+                            type="email"
+                            className="form-input"
+                            name="email"
+                            placeholder="customer@example.com"
+                            value={formData.email}
+                            onChange={handleChange}
+                        />
+                    </div>
+
                     <div className="form-group">
                         <label className="form-label">Phone Number (with country code)</label>
-                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
-                            <input
-                                type="text"
-                                className="form-input"
-                                name="phoneNumber"
-                                placeholder="+919876543210"
-                                value={formData.phoneNumber}
-                                onChange={handleChange}
-                                style={{ flex: 1 }}
-                            />
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={() => setShowVerification(true)}
-                                style={{ whiteSpace: 'nowrap' }}
-                            >
-                                🔐 Verify Number
-                            </button>
-                        </div>
-                        <small className="text-muted">
-                            ℹ️ Optional: Verify your number to ensure SMS delivery.
-                        </small>
+                        <input
+                            type="text"
+                            className="form-input"
+                            name="phoneNumber"
+                            placeholder="+919876543210"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                        />
                     </div>
 
                     <div className="form-group">
@@ -358,8 +440,8 @@ Thank you!
                         <div className="flow-step">
                             <div className="step-number">2</div>
                             <div className="step-content">
-                                <h4>💬 SMS Follow-up</h4>
-                                <p>Automatic message sent after call</p>
+                                <h4>📧 Email Follow-up</h4>
+                                <p>Automatic email sent after call</p>
                                 <ul>
                                     <li>Summary of call</li>
                                     <li>Payment/action links</li>
@@ -379,7 +461,7 @@ Thank you!
                                 <ul>
                                     <li>Call status</li>
                                     <li>Customer response</li>
-                                    <li>SMS delivery</li>
+                                    <li>Email delivery</li>
                                     <li>Analytics</li>
                                 </ul>
                             </div>
@@ -406,44 +488,27 @@ Thank you!
                     <div className="example-card">
                         <h5>EMI Reminder</h5>
                         <p>Voice: "Your EMI of ₹25,000 is due on 5th Feb"</p>
-                        <p>SMS: Payment link + details</p>
+                        <p>Email: Payment link + details</p>
                     </div>
                     <div className="example-card">
                         <h5>Policy Renewal</h5>
                         <p>Voice: "Your policy expires on 15th March"</p>
-                        <p>SMS: Renewal link + coverage details</p>
+                        <p>Email: Renewal link + coverage details</p>
                     </div>
                     <div className="example-card">
                         <h5>Loan Offer</h5>
                         <p>Voice: "Pre-approved loan up to ₹5 lakhs"</p>
-                        <p>SMS: Application link + terms</p>
+                        <p>Email: Application link + terms</p>
                     </div>
                     <div className="example-card">
                         <h5>Claim Update</h5>
                         <p>Voice: "Your claim is being processed"</p>
-                        <p>SMS: Status + documents needed</p>
+                        <p>Email: Status + documents needed</p>
                     </div>
                 </div>
             </div>
 
-            {/* Verification Modal */}
-            {showVerification && (
-                <div className="modal-overlay" onClick={() => setShowVerification(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button
-                            className="modal-close"
-                            onClick={() => setShowVerification(false)}
-                            aria-label="Close"
-                        >
-                            ✕
-                        </button>
-                        <PhoneVerification
-                            onVerified={handleVerified}
-                            initialPhoneNumber={formData.phoneNumber}
-                        />
-                    </div>
-                </div>
-            )}
+
         </div>
     )
 }

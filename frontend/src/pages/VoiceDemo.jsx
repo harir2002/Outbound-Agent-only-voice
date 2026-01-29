@@ -5,7 +5,9 @@ function VoiceDemo() {
     const [sector, setSector] = useState('banking')
     const [language, setLanguage] = useState('en')
     const [phoneNumber, setPhoneNumber] = useState('')
+    const [email, setEmail] = useState('')
     const [purpose, setPurpose] = useState('emi_reminder')
+    const [publicUrl, setPublicUrl] = useState('https://1db819452b10.ngrok-free.app')
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
 
@@ -21,7 +23,9 @@ function VoiceDemo() {
                 phone_number: phoneNumber,
                 purpose,
                 sector,
-                language
+                language,
+                public_url: publicUrl,
+                customer_data: { email }
             })
             setMessage(`Call initiated! Call ID: ${response.data.call_id}`)
         } catch (error) {
@@ -40,6 +44,19 @@ function VoiceDemo() {
                 <div className="card">
                     <h3>Initiate Outbound Call</h3>
                     <div className="form-group">
+                        <label className="form-label">Ngrok / Public URL</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            placeholder="https://your-ngrok-url.app"
+                            value={publicUrl}
+                            onChange={(e) => setPublicUrl(e.target.value)}
+                        />
+                        <small className="text-muted" style={{ display: 'block', marginTop: '0.25rem' }}>
+                            Required for Twilio callbacks (must start with https://)
+                        </small>
+                    </div>
+                    <div className="form-group">
                         <label className="form-label">Sector</label>
                         <select className="form-select" value={sector} onChange={(e) => setSector(e.target.value)}>
                             <option value="banking">Banking</option>
@@ -55,6 +72,9 @@ function VoiceDemo() {
                             <option value="policy_renewal">Policy Renewal</option>
                             <option value="loan_offer">Loan Offer</option>
                             <option value="claim_update">Claim Update</option>
+                            <option value="debt_recovery">Debt Recovery (Resolution Offer)</option>
+                            <option value="lead_generation">Lead Generation (Pre-Approved Loan)</option>
+                            <option value="credit_repair">Credit Repair (Health Check)</option>
                         </select>
                     </div>
                     <div className="form-group">
@@ -63,7 +83,6 @@ function VoiceDemo() {
                             <option value="en">English</option>
                             <option value="hi">Hindi</option>
                             <option value="ta">Tamil</option>
-                            <option value="te">Telugu</option>
                         </select>
                     </div>
                     <div className="form-group">
@@ -75,6 +94,19 @@ function VoiceDemo() {
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
                         />
+                    </div>
+                    <div className="form-group">
+                        <label className="form-label">Email Address</label>
+                        <input
+                            type="email"
+                            className="form-input"
+                            placeholder="user@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <small className="text-muted" style={{ display: 'block', marginTop: '0.25rem' }}>
+                            Optional: Enter email to receive call summary and links
+                        </small>
                     </div>
                     <button className="btn btn-primary" onClick={initiateCall} disabled={loading}>
                         {loading ? 'Initiating...' : 'Initiate Call'}
@@ -93,7 +125,7 @@ function VoiceDemo() {
                     </ul>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 

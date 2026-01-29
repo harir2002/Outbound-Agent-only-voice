@@ -27,13 +27,20 @@ class Settings(BaseSettings):
     SARVAM_API_KEY: str
     SARVAM_TTS_MODEL: str = "bulbul:v1"
     SARVAM_STT_MODEL: str = "saaras:v1"
-    SARVAM_API_URL: str = "https://api.sarvam.ai/v1"
+    SARVAM_API_URL: str = "https://api.sarvam.ai"
     
     # Twilio
     TWILIO_ACCOUNT_SID: str
     TWILIO_AUTH_TOKEN: str
     TWILIO_WHATSAPP_NUMBER: str
     TWILIO_PHONE_NUMBER: str
+    
+    # Email
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    FROM_EMAIL: str = "noreply@bfsi-ai.com"
     
     # ==================== DATABASE ====================
     DATABASE_URL: str = "sqlite:///./data/bfsi_ai.db"
@@ -58,6 +65,7 @@ class Settings(BaseSettings):
     BACKEND_HOST: str = "0.0.0.0"
     BACKEND_PORT: int = 8000
     FRONTEND_URL: str = "http://localhost:3000"
+    PUBLIC_URL: str = "https://1db819452b10.ngrok-free.app"  # For external access (ngrok, production URL)
     
     # CORS
     CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173"

@@ -20,6 +20,7 @@ class SarvamVoiceService:
         self.stt_model = settings.SARVAM_STT_MODEL
         
         self.headers = {
+            "api-subscription-key": self.api_key,
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
@@ -44,16 +45,22 @@ class SarvamVoiceService:
             Audio bytes (WAV format)
         """
         try:
+            # Get detailed language config to ensure correct code (en-IN)
+            config = self.get_language_config(language)
+            target_language = config.get("code", "en-IN")
+
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     f"{self.api_url}/text-to-speech",
                     headers=self.headers,
                     json={
                         "text": text,
-                        "language_code": language,
+                        "target_language_code": target_language,
                         "speaker": speaker,
-                        "speed": speed,
-                        "model": self.tts_model
+                        "speech_sample_rate": 8000,
+                        "enable_preprocessing": True,
+                        "model": self.tts_model,
+                        "pace": speed  # Map speed to pace
                     },
                     timeout=30.0
                 )
@@ -62,7 +69,12 @@ class SarvamVoiceService:
                 
                 # Get audio from response
                 result = response.json()
-                audio_base64 = result.get("audio", "")
+                # Check for new credentials/format: { "audios": ["base64..."] }
+                if "audios" in result and isinstance(result["audios"], list):
+                    audio_base64 = result["audios"][0]
+                else:
+                    audio_base64 = result.get("audio", "")
+                    
                 audio_bytes = base64.b64decode(audio_base64)
                 
                 logger.info(f"✅ TTS generated: {len(text)} chars -> {len(audio_bytes)} bytes")
@@ -217,33 +229,21 @@ class SarvamVoiceService:
         configs = {
             "en": {
                 "name": "English",
-                "speaker": "meera",
-                "speed": 1.0
+                "code": "en-IN",
+                "speaker": "manisha",
+                "speed": 0.9
             },
             "hi": {
                 "name": "Hindi",
-                "speaker": "arvind",
-                "speed": 0.95
+                "code": "hi-IN",
+                "speaker": "abhilash",
+                "speed": 0.85
             },
             "ta": {
                 "name": "Tamil",
-                "speaker": "amudha",
-                "speed": 0.95
-            },
-            "te": {
-                "name": "Telugu",
-                "speaker": "bhavani",
-                "speed": 0.95
-            },
-            "mr": {
-                "name": "Marathi",
-                "speaker": "aarohi",
-                "speed": 0.95
-            },
-            "bn": {
-                "name": "Bengali",
-                "speaker": "ananya",
-                "speed": 0.95
+                "code": "ta-IN",
+                "speaker": "vidya",
+                "speed": 0.85
             }
         }
         
