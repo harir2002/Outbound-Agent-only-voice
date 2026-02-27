@@ -61,11 +61,6 @@ export const verificationAPI = {
     resetVerification: (phoneNumber) => api.delete(`/api/verification/reset/${phoneNumber}`)
 }
 
-// Email API
-export const emailAPI = {
-    sendEmail: (data) => api.post('/api/email/send', data)
-}
-
 // Health check
 export const healthCheck = () => api.get('/health')
 

@@ -35,12 +35,7 @@ class Settings(BaseSettings):
     TWILIO_WHATSAPP_NUMBER: str
     TWILIO_PHONE_NUMBER: str
     
-    # Email
-    SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
-    SMTP_USER: str
-    SMTP_PASSWORD: str
-    FROM_EMAIL: str = "noreply@bfsi-ai.com"
+
     
     # ==================== DATABASE ====================
     DATABASE_URL: str = "sqlite:///./data/bfsi_ai.db"

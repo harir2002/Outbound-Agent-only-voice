@@ -2,6 +2,6 @@
 API Package Initialization
 """
 
-from app.api import whatsapp, sms, voice, analytics
+from app.api import voice
 
-__all__ = ["whatsapp", "sms", "voice", "analytics"]
+__all__ = ["voice"]
