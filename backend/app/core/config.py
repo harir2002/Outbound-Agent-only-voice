@@ -32,7 +32,6 @@ class Settings(BaseSettings):
     # Twilio
     TWILIO_ACCOUNT_SID: str
     TWILIO_AUTH_TOKEN: str
-    TWILIO_WHATSAPP_NUMBER: str
     TWILIO_PHONE_NUMBER: str
     
 
