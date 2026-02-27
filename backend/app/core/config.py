@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     
     # Sarvam AI
     SARVAM_API_KEY: str
-    SARVAM_TTS_MODEL: str = "bulbul:v1"
+    SARVAM_TTS_MODEL: str = "bulbul:v2"
     SARVAM_STT_MODEL: str = "saaras:v1"
     SARVAM_API_URL: str = "https://api.sarvam.ai"
     
