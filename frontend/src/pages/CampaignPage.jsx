@@ -9,7 +9,7 @@ function CampaignPage() {
         campaignType: 'sip_debit_reminder',
         sector: 'mutual_funds',
         language: 'en',
-        ngrokUrl: 'https://1db819452b10.ngrok-free.app'
+        ngrokUrl: 'https://harir2002-outbound-only-voice.hf.space'
     })
 
     const [loading, setLoading] = useState(false)

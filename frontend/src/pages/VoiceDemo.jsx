@@ -6,7 +6,7 @@ function VoiceDemo() {
     const [language, setLanguage] = useState('en')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [purpose, setPurpose] = useState('sip_debit_reminder')
-    const [publicUrl, setPublicUrl] = useState('https://1db819452b10.ngrok-free.app')
+    const [publicUrl, setPublicUrl] = useState('https://harir2002-outbound-only-voice.hf.space')
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState('')
 
