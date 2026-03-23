@@ -306,3 +306,9 @@
         opacity: 1;
     }
 }
+
+/* Make Date Picker Calendar Icon White */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}

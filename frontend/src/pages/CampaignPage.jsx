@@ -6,8 +6,10 @@ function CampaignPage() {
     const [formData, setFormData] = useState({
         phoneNumber: '',
         customerName: '',
-        campaignType: 'sip_debit_reminder',
-        sector: 'mutual_funds',
+        amount: '5000',
+        dueDate: '2026-03-30',
+        campaignType: 'personal_loan_reminder',
+        sector: 'banking',
         language: 'en',
         ngrokUrl: 'https://harir2002-outbound-only-voice.hf.space'
     })
@@ -43,6 +45,8 @@ function CampaignPage() {
                 language: formData.language,
                 customer_data: {
                     name: formData.customerName,
+                    amount: formData.amount,
+                    due_date: formData.dueDate
                 },
                 public_url: publicUrl
             })
@@ -122,6 +126,11 @@ function CampaignPage() {
                             value={formData.campaignType}
                             onChange={handleChange}
                         >
+                            <option value="personal_loan_reminder">Personal Loan Reminder</option>
+                            <option value="credit_card_reminder">Credit Card Reminder</option>
+                            <option value="home_loan_reminder">Home Loan Reminder</option>
+                            <option value="auto_loan_reminder">Auto Loan Reminder</option>
+                            <option value="business_loan_reminder">Business Loan Reminder</option>
                             <option value="sip_debit_reminder">SIP Debit Reminder</option>
                             <option value="kyc_update_reminder">KYC Update Reminder</option>
                             <option value="sip_failure_notification">SIP Failure Notification</option>
@@ -130,7 +139,7 @@ function CampaignPage() {
 
                     <div className="form-group">
                         <label className="form-label">Sector</label>
-                        <div className="form-input" style={{ cursor: 'default' }}>Mutual Funds</div>
+                        <div className="form-input" style={{ cursor: 'default' }}>Banking</div>
                     </div>
 
                     <div className="form-group">
@@ -171,6 +180,29 @@ function CampaignPage() {
                             name="phoneNumber"
                             placeholder="+919876543210"
                             value={formData.phoneNumber}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Amount (₹)</label>
+                        <input
+                            type="text"
+                            className="form-input"
+                            name="amount"
+                            placeholder="5000"
+                            value={formData.amount}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label className="form-label">Due Date / Deadline Date</label>
+                        <input
+                            type="date"
+                            className="form-input"
+                            name="dueDate"
+                            value={formData.dueDate}
                             onChange={handleChange}
                         />
                     </div>
@@ -245,26 +277,6 @@ function CampaignPage() {
                     </div>
                 </div>
             </div>
-
-            {/* Quick Examples */}
-            <div className="card examples-section">
-                <h3>📋 Quick Examples</h3>
-                <div className="examples-grid">
-                    <div className="example-card">
-                        <h5>Campaign 1: SIP Debit Reminder</h5>
-                        <p>Remind investors about upcoming SIP debit to avoid failures.</p>
-                    </div>
-                    <div className="example-card">
-                        <h5>Campaign 2: KYC Update Reminder</h5>
-                        <p>Ask investors to complete or update KYC to prevent transaction issues.</p>
-                    </div>
-                    <div className="example-card">
-                        <h5>Campaign 3: SIP Failure Notification</h5>
-                        <p>Inform investors when a SIP has failed due to insufficient balance.</p>
-                    </div>
-                </div>
-            </div>
-
 
         </div>
     )

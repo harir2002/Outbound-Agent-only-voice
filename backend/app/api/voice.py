@@ -534,82 +534,71 @@ async def handle_call_status(
 async def _generate_call_greeting(request: OutboundCallRequest) -> str:
     """Generate personalized call greeting"""
     
-    # English Greetings (Mutual Fund campaigns)
-    greetings_en = {
-        "sip_debit_reminder": (
-            "Hello, this is a reminder call from your mutual fund service provider. "
-            "Your SIP installment of ₹5,000 is scheduled to be deducted on 5th March. "
-            "Please ensure sufficient balance in your bank account. Thank you."
-        ),
-        "kyc_update_reminder": (
-            "Hello, this is an important message from your mutual fund service provider. "
-            "Our records show that your KYC needs to be updated. "
-            "Please complete your KYC at the earliest to continue uninterrupted investments. Thank you."
-        ),
-        "sip_failure_notification": (
-            "Hello, this is a notification from your mutual fund service provider. "
-            "Your recent SIP transaction could not be processed due to insufficient balance. "
-            "Please update your bank balance to avoid future SIP failures. Thank you."
-        ),
-        "default": "Hello, this is a message from your mutual fund service provider."
-    }
-
-    # Hindi Greetings (Mutual Fund campaigns)
-    greetings_hi = {
-        "sip_debit_reminder": (
-            "नमस्कार, यह आपके म्यूचुअल फंड सेवा प्रदाता की ओर से एक रिमाइंडर कॉल है। "
-            "आपकी SIP की राशि ₹5,000, 5 मार्च को कटने वाली है। "
-            "कृपया अपने बैंक खाते में पर्याप्त बैलेंस सुनिश्चित करें। धन्यवाद।"
-        ),
-        "kyc_update_reminder": (
-            "नमस्कार, यह आपके म्यूचुअल फंड सेवा प्रदाता की ओर से एक महत्वपूर्ण सूचना है। "
-            "हमारे रिकॉर्ड के अनुसार आपका KYC अपडेट लंबित है। "
-            "कृपया बिना किसी रुकावट के निवेश जारी रखने के लिए जल्द से जल्द KYC पूरा करें। धन्यवाद।"
-        ),
-        "sip_failure_notification": (
-            "नमस्कार, यह आपके म्यूचुअल फंड सेवा प्रदाता की ओर से एक सूचना है। "
-            "अपर्याप्त बैलेंस के कारण आपकी हाल की SIP प्रक्रिया पूरी नहीं हो पाई। "
-            "कृपया भविष्य में SIP फेल होने से बचने के लिए अपना बैंक बैलेंस अपडेट करें। धन्यवाद।"
-        ),
-        "default": "नमस्कार, यह आपके म्यूचुअल फंड सेवा प्रदाता की ओर से एक संदेश है।"
-    }
-
-    # Tamil Greetings (Mutual Fund campaigns)
-    greetings_ta = {
-        "sip_debit_reminder": (
-            "வணக்கம், இது உங்கள் மியூச்சுவல் ஃபண்ட் சேவை வழங்குநரிடமிருந்து வரும் நினைவூட்டல் அழைப்பு. "
-            "உங்கள் SIP தொகை ரூ.5,000, மார்ச் 5ஆம் தேதி பிடித்தம் செய்யப்படும். "
-            "உங்கள் வங்கி கணக்கில் போதிய இருப்பு இருப்பதை உறுதி செய்யுங்கள். நன்றி."
-        ),
-        "kyc_update_reminder": (
-            "வணக்கம், இது உங்கள் மியூச்சுவல் ஃபண்ட் சேவை வழங்குநரிடமிருந்து வரும் முக்கிய தகவல். "
-            "உங்கள் KYC புதுப்பிக்கப்பட வேண்டியுள்ளது. "
-            "உங்கள் முதலீடுகள் தடையின்றி தொடர, தயவுசெய்து KYC-யை விரைவில் முடிக்கவும். நன்றி."
-        ),
-        "sip_failure_notification": (
-            "வணக்கம், இது உங்கள் மியூச்சுவல் ஃபண்ட் சேவை வழங்குநரிடமிருந்து வரும் அறிவிப்பு. "
-            "போதிய இருப்பு இல்லாததால், உங்கள் சமீபத்திய SIP பரிவர்த்தனை செயல்படுத்தப்படவில்லை. "
-            "எதிர்கால SIP தோல்விகளைத் தவிர்க்க, உங்கள் வங்கி இருப்பை புதுப்பிக்கவும். நன்றி."
-        ),
-        "default": "வணக்கம், இது உங்கள் மியூச்சுவல் ஃபண்ட் சேவை வழங்குநரிடமிருந்து வரும் செய்தி."
-    }
-
-    # Map languages to greetings
-    all_greetings = {
-        "en": greetings_en,
-        "hi": greetings_hi,
-        "ta": greetings_ta
-    }
-
-    # Get localized greetings based on request language, default to English
-    selected_greetings = all_greetings.get(request.language, greetings_en)
+    # Extract variables
+    name = request.customer_data.get("name") if request.customer_data else "sir or madam"
+    amount = request.customer_data.get("amount") if request.customer_data and request.customer_data.get("amount") else "5000"
+    due_date = request.customer_data.get("due_date") if request.customer_data and request.customer_data.get("due_date") else "the 5th of this month"
     
-    # Get specific purpose greeting or default
-    greeting = selected_greetings.get(request.purpose, selected_greetings["default"])
+    debit_date = due_date
+    deadline_date = due_date
+    
+    campaign_type = request.purpose
+    language = request.language
+    
+    # Mapping exact scripts provided by user
+    scripts = {
+        "personal_loan_reminder": {
+            "en": f"Hello {name}, this is a reminder that your Personal Loan EMI of ₹{amount} is due on {due_date}. Please ensure timely payment to avoid late charges. Thank you!",
+            "hi": f"नमस्ते {name}, यह याद दिलाना है कि आपके पर्सनल लोन की EMI ₹{amount} की देय तिथि {due_date} है। देरी से बचने के लिए समय पर भुगतान करें। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, உங்கள் தனிநபர் கடன் EMI தொகை ₹{amount}, {due_date} அன்று செலுத்த வேண்டும். தாமதக் கட்டணங்களை தவிர்க்க சரியான நேரத்தில் செலுத்தவும். நன்றி!"
+        },
+        "credit_card_reminder": {
+            "en": f"Hello {name}, your Credit Card minimum due amount of ₹{amount} must be paid by {due_date}. Avoid late fees by paying at the earliest. Thank you!",
+            "hi": f"नमस्ते {name}, आपके क्रेडिट कार्ड की न्यूनतम देय राशि ₹{amount} {due_date} तक जमा करनी है। विलंब शुल्क से बचने के लिए जल्द भुगतान करें। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, உங்கள் கிரெடிட் கார்டு குறைந்தபட்ச தொகை ₹{amount}, {due_date} க்குள் செலுத்த வேண்டும். தாமதக் கட்டணங்களை தவிர்க்கவும். நன்றி!"
+        },
+        "home_loan_reminder": {
+            "en": f"Hello {name}, your Home Loan EMI of ₹{amount} is due on {due_date}. Please ensure sufficient balance in your account for auto-debit. Thank you!",
+            "hi": f"नमस्ते {name}, आपके होम लोन की EMI ₹{amount} की कटौती {due_date} को होगी। ऑटो-डेबिट के लिए पर्याप्त बैलेंस सुनिश्चित करें। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, உங்கள் வீட்டு கடன் EMI ₹{amount}, {due_date} அன்று கழிக்கப்படும். தானியங்கி பற்று வசதிக்கு போதுமான இருப்பு வைத்திருக்கவும். நன்றி!"
+        },
+        "auto_loan_reminder": {
+            "en": f"Hello {name}, your Auto Loan EMI of ₹{amount} is scheduled on {due_date}. Please maintain adequate funds in your account. Thank you!",
+            "hi": f"नमस्ते {name}, आपके ऑटो लोन की EMI ₹{amount} की तारीख {due_date} है। अपने खाते में पर्याप्त राशि बनाए रखें। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, உங்கள் வாகனக் கடன் EMI ₹{amount}, {due_date} அன்று நிர்ணயிக்கப்பட்டுள்ளது. உங்கள் கணக்கில் போதுமான தொகை வைத்திருக்கவும். நன்றி!"
+        },
+        "business_loan_reminder": {
+            "en": f"Hello {name}, your Business Loan repayment of ₹{amount} is due on {due_date}. Timely payment helps maintain your business credit profile. Thank you!",
+            "hi": f"नमस्ते {name}, आपके बिज़नेस लोन की किस्त ₹{amount} की देय तिथि {due_date} है। समय पर भुगतान आपकी क्रेडिट प्रोफ़ाइल को बनाए रखता है। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, உங்கள் வணிகக் கடன் தவணை ₹{amount}, {due_date} அன்று செலுத்த வேண்டும். சரியான நேரத்தில் செலுத்துவது உங்கள் கடன் மதிப்பை பாதுகாக்கும். நன்றி!"
+        },
+        "sip_debit_reminder": {
+            "en": f"Hello {name}, your SIP installment of ₹{amount} will be auto-debited on {debit_date}. Please ensure sufficient balance to avoid SIP cancellation. Thank you!",
+            "hi": f"नमस्ते {name}, आपकी SIP किस्त ₹{amount} की ऑटो-डेबिट {debit_date} को होगी। SIP रद्द होने से बचाने के लिए पर्याप्त बैलेंस रखें। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, உங்கள் SIP தவணை ₹{amount}, {debit_date} அன்று தானியங்கியாக கழிக்கப்படும். SIP ரத்தாவதை தவிர்க்க போதுமான இருப்பை உறுதி செய்யவும். நன்றி!"
+        },
+        "kyc_update_reminder": {
+            "en": f"Hello {name}, your KYC documents are due for renewal by {deadline_date}. Please update your KYC to avoid interruption in your account services. Thank you!",
+            "hi": f"नमस्ते {name}, आपके KYC दस्तावेज़ {deadline_date} तक नवीनीकृत करने हैं। अपनी सेवाओं में बाधा से बचने के लिए KYC अपडेट करें। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, உங்கள் KYC ஆவணங்கள் {deadline_date} க்குள் புதுப்பிக்கப்பட வேண்டும். உங்கள் சேவைகள் தடைபடாமல் இருக்க KYC புதுப்பிக்கவும். நன்றி!"
+        },
+        "sip_failure_notification": {
+            "en": f"Hello {name}, your SIP installment of ₹{amount} scheduled on {debit_date} has failed due to insufficient funds. Please recharge your account immediately to avoid SIP discontinuation. Thank you!",
+            "hi": f"नमस्ते {name}, {debit_date} को निर्धारित आपकी SIP किस्त ₹{amount} अपर्याप्त बैलेंस के कारण विफल हो गई है। SIP बंद होने से बचाने के लिए तुरंत अपना खाता रिचार्ज करें। धन्यवाद!",
+            "ta": f"வணக்கம் {name}, {debit_date} அன்று நிர்ணயிக்கப்பட்ட உங்கள் SIP தவணை ₹{amount} போதுமான இருப்பு இல்லாததால் தோல்வியடைந்தது. SIP நிறுத்தப்படாமல் இருக்க உடனடியாக தொகையை நிரப்பவும். நன்றி!"
+        }
+    }
+    
+    # Fallback to default if unknown campaign
+    if campaign_type not in scripts:
+        campaign_type = "personal_loan_reminder"
+        
+    # Get localized script or default to English
+    selected_script = scripts[campaign_type].get(language, scripts[campaign_type]["en"])
     
     # Add call recording disclosure
-    disclosure = get_call_recording_disclosure(request.language)
+    disclosure = get_call_recording_disclosure(language)
     
-    full_greeting = f"{greeting} {disclosure}"
+    full_greeting = f"{selected_script} {disclosure}"
     
     return full_greeting
